@@ -42,7 +42,7 @@ function Tiles.drawTile(column, row)
     if Tiles.isTile(column, row) then
         love.graphics.draw(Texture.tile, Utilities.fieldToCoordinate(column), Utilities.fieldToCoordinate(row), 0, PIXEL, PIXEL, OFFSET, OFFSET)
         if not Tiles.isTile(column, row-1) then
-            love.graphics.draw(Texture.topper, Utilities.fieldToCoordinate(column), Utilities.fieldToCoordinate(row), 0, PIXEL, PIXEL, OFFSET, OFFSET)
+            love.graphics.draw(Texture.topper.top, Utilities.fieldToCoordinate(column), Utilities.fieldToCoordinate(row), 0, PIXEL, PIXEL, OFFSET, OFFSET)
         end
     end
 end

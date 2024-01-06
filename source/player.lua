@@ -8,14 +8,39 @@ function Player.load()
     Player.verticalVelocity = 0
     Player.state = "idle"
     Player.direction = "right"
+    Player.walkingFrame = 1
+    Player.currentTexture = Texture.player.idle
+
+    Timer.addRepeating("walkingAnimation", 0.5, function()
+        Player.walkingFrame = (Player.walkingFrame%2)+1
+        if Player.checkState("walking") then
+            Player.currentTexture = Texture.player.walking[Player.walkingFrame]
+        end
+    end)
 end
 
 -- Switches state of the player to the value given in argument.
 function Player.setState(state)
     Player.state = state
 
+    if state == "idle" then
+        Player.currentTexture = Texture.player.idle
+        return
+    end
+
+    if state == "walking" then
+        Player.currentTexture = Texture.player.walking[1]
+    end
+
     if state == "jumping" then
+        Player.currentTexture = Texture.player.jumpingFalling
         Player.verticalVelocity = -JUMP_VELOCITY
+        return
+    end
+
+    if state == "falling" then
+        Player.currentTexture = Texture.player.jumpingFalling
+        return
     end
 end
 
@@ -123,12 +148,12 @@ end
 -- Draw's player.
 function Player.draw()
     if Player.checkDirection("left") then
-        love.graphics.draw(Texture.player, Player.x, Player.y, 0, -PIXEL, PIXEL, OFFSET, OFFSET)
+        love.graphics.draw(Player.currentTexture, Player.x, Player.y, 0, -PIXEL, PIXEL, OFFSET, OFFSET)
         return
     end
 
     if Player.checkDirection("right") then
-        love.graphics.draw(Texture.player, Player.x, Player.y, 0, PIXEL, PIXEL, OFFSET, OFFSET)
+        love.graphics.draw(Player.currentTexture, Player.x, Player.y, 0, PIXEL, PIXEL, OFFSET, OFFSET)
         return
     end
 end
