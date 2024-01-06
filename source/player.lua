@@ -2,7 +2,7 @@ Player = {nil}
 
 -- Loads Player module.
 function Player.load()
-    Player.x = Utilities.fieldToCoordinate(3)
+    Player.x = Utilities.fieldToCoordinate(10)
     Player.y = Utilities.fieldToCoordinate(6)
     Player.horizontalVelocity = 0
     Player.verticalVelocity = 0
@@ -74,23 +74,96 @@ function Player.checkDirection(direction)
     return false
 end
 
--- Returns true is player is in the air at the moment, returns false othwerwise.
-function Player.isInAir()
+-- Returns true if player touches tile from top, returns false otherwise.
+function Player.collidesTileFromTop()
+    local leftColumn = Utilities.coordinateToField(Player.x-3*PIXEL)
+    local rightColumn = Utilities.coordinateToField(Player.x+3*PIXEL)
+    local row = Utilities.coordinateToField(Player.y-TILE_SIZE/2)
+
+    if Tiles.isTile(leftColumn, row) or Tiles.isTile(rightColumn, row) then
+        return true
+    end
+
+    return false
+end
+
+-- Returns true if player touches tile from bottom, returns false othwerwise.
+function Player.collidesTileFromBottom()
     local leftColumn = Utilities.coordinateToField(Player.x-3*PIXEL)
     local rightColumn = Utilities.coordinateToField(Player.x+3*PIXEL)
     local row = Utilities.coordinateToField(Player.y+TILE_SIZE/2)
 
     if Tiles.isTile(leftColumn, row) or Tiles.isTile(rightColumn, row) then
-        return false
+        return true
     end
 
-    return true
+    return false
+end
+
+-- Returns true if player touches tile from top, returns false otherwise.
+function Player.collidesTileFromLeft()
+    local column = Utilities.coordinateToField(Player.x-5*PIXEL)
+    local topRow = Utilities.coordinateToField(Player.y-TILE_SIZE/2+PIXEL)
+    local bottomRow = Utilities.coordinateToField(Player.y+TILE_SIZE/2-PIXEL)
+
+    if Tiles.isTile(column, topRow) or Tiles.isTile(column, bottomRow) then
+        return true
+    end
+
+    return false
+end
+
+-- Returns true if player touches tile from top, returns false otherwise.
+function Player.collidesTileFromRight()
+    local column = Utilities.coordinateToField(Player.x+5*PIXEL)
+    local topRow = Utilities.coordinateToField(Player.y-TILE_SIZE/2+PIXEL)
+    local bottomRow = Utilities.coordinateToField(Player.y+TILE_SIZE/2-PIXEL)
+
+    if Tiles.isTile(column, topRow) or Tiles.isTile(column, bottomRow) then
+        return true
+    end
+
+    return false
+end
+
+-- Returns opposite of `Player.collidesTileFromBottom()`.
+function Player.isInAir()
+    return not Player.collidesTileFromBottom()
+end
+
+-- Blocks player movement to left.
+function Player.blockLeftMovement()
+    if Player.checkDirection("left") and (Player.collidesTileFromLeft() or Player.x < 5*PIXEL)then
+        Player.x = Utilities.fieldCenter(Player.x)-3*PIXEL
+    end
+end
+
+-- Blocks player movement to right.
+function Player.blockRightMovement()
+    if Player.checkDirection("right") and (Player.collidesTileFromRight() or Player.x > COLUMN_NUMBER*TILE_SIZE-5*PIXEL) then
+        Player.x = Utilities.fieldCenter(Player.x)+3*PIXEL
+    end
+end
+
+-- Blocks player jumping.
+function Player.blockTopMovement()
+    if Player.collidesTileFromTop() or Player.y < TILE_SIZE/2 then
+        Player.y = Utilities.fieldCenter(Player.y)
+        Player.verticalVelocity = 0
+    end
+end
+
+-- Blocks player hitting the ground.
+function Player.blockBottomMovement()
+    if not Player.isInAir() then
+        Player.setState("idle")
+        Player.verticalVelocity = 0
+        Player.y = Utilities.fieldCenter(Player.y)
+    end
 end
 
 -- Updates player's state and position.
 function Player.update(dt)
-    Player.recognizeDirection()
-
     if Player.checkState("idle") then
         if love.keyboard.isDown('a') or love.keyboard.isDown('d') then
             Player.setState("walking")
@@ -101,10 +174,14 @@ function Player.update(dt)
         if Player.isInAir() then
             Player.setState("falling")
         end
+
+        Player.recognizeDirection()
         return
     end
 
     if Player.checkState("walking") then
+        Player.x = Player.x + dt*Player.horizontalVelocity
+
         if not love.keyboard.isDown('a') and not love.keyboard.isDown('d') then
             Player.setState("idle")
         end
@@ -115,32 +192,45 @@ function Player.update(dt)
             Player.setState("falling")
         end
 
-        Player.x = Player.x + dt*Player.horizontalVelocity
+        Player.blockLeftMovement()
+        Player.blockRightMovement()
+
+        Player.recognizeDirection()
         return
     end
 
     if Player.checkState("jumping") then
+        Player.x = Player.x + dt*Player.horizontalVelocity
+        Player.verticalVelocity = Player.verticalVelocity + dt*GRAVITY
+        Player.y = Player.y + dt*Player.verticalVelocity
+
         if Player.verticalVelocity > 0 then
             Player.setState("falling")
         end
+        
+        Player.blockTopMovement()
+        Player.blockLeftMovement()
+        Player.blockRightMovement()
 
-        Player.x = Player.x + MOVEMENT_IN_AIR*dt*Player.horizontalVelocity
-        Player.verticalVelocity = Player.verticalVelocity + dt*GRAVITY
-        Player.y = Player.y + dt*Player.verticalVelocity
+        Player.recognizeDirection()
         return
     end
 
     if Player.checkState("falling") then
-        if not Player.isInAir() then
-            Player.setState("idle")
-            Player.verticalVelocity = 0
-            Player.y = Utilities.fieldToCoordinate(Utilities.coordinateToField(Player.y))
-
-        end
-
-        Player.x = Player.x + MOVEMENT_IN_AIR*dt*Player.horizontalVelocity
+        Player.x = Player.x + dt*Player.horizontalVelocity
         Player.verticalVelocity = Player.verticalVelocity + dt*GRAVITY
         Player.y = Player.y + dt*Player.verticalVelocity
+
+        if Player.y > TILE_SIZE*ROW_NUMBER+TILE_SIZE/2 then
+            Player.x = Utilities.fieldToCoordinate(10)
+            Player.y = Utilities.fieldToCoordinate(6)
+        end
+
+        Player.blockBottomMovement()
+        Player.blockLeftMovement()
+        Player.blockRightMovement()
+
+        Player.recognizeDirection()
         return
     end
 end

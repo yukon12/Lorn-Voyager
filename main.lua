@@ -25,6 +25,10 @@ end
 
 -- Main draw function.
 function love.draw()
+    local shift = Player.x-WINDOW_WIDTH/2
+    shift = math.max(shift, 0)
+    shift = math.min(shift, TILE_SIZE*COLUMN_NUMBER-WINDOW_WIDTH)
+    love.graphics.translate(-shift, 0)
     love.graphics.clear(BLACK)
     Player.draw()
     Tiles.draw()
