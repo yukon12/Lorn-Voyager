@@ -18,4 +18,9 @@ function Texture.load()
         jumpingFalling = love.graphics.newImage("resources/player-jumping-falling.png")
     }
     Texture.box = love.graphics.newImage("resources/box.png")
+    Texture.crab = {
+        love.graphics.newImage("resources/crab1.png"),
+        love.graphics.newImage("resources/crab2.png")
+    }
+    Texture.bullet = love.graphics.newImage("resources/bullet.png")
 end

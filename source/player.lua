@@ -8,15 +8,8 @@ function Player.load()
     Player.verticalVelocity = 0
     Player.state = "idle"
     Player.direction = "right"
-    Player.walkingFrame = 1
     Player.currentTexture = Texture.player.idle
-
-    Timer.addRepeating("walkingAnimation", 0.5, function()
-        Player.walkingFrame = (Player.walkingFrame%2)+1
-        if Player.checkState("walking") then
-            Player.currentTexture = Texture.player.walking[Player.walkingFrame]
-        end
-    end)
+    Player.canShoot = true
 end
 
 -- Switches state of the player to the value given in argument.
@@ -164,6 +157,15 @@ end
 
 -- Updates player's state and position.
 function Player.update(dt)
+    if love.keyboard.isDown("space") and Player.canShoot then
+        local x = Player.x + (Player.direction == "right" and 4*PIXEL or -5*PIXEL)
+        table.insert(Bullets, Bullet(x, Player.y, Player.direction))
+        Player.canShoot = false
+        Timer.addNonRepeating("reload", RELOAD, function()
+            Player.canShoot = true
+        end)
+    end
+
     if Player.checkState("idle") then
         if love.keyboard.isDown('a') or love.keyboard.isDown('d') then
             Player.setState("walking")
