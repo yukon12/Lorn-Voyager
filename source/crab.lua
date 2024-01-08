@@ -66,6 +66,14 @@ function Crab(column, row)
             return false
         end,
 
+        -- Returns true if a given point is in the hurtbox of a crab.
+        belongs = function(self, x, y)
+            if x >= self.x-7*PIXEL and x <= self.x+7*PIXEL and y >= self.y-TILE_SIZE/2 and y <= self.y+TILE_SIZE/2 then
+                return true
+            end
+            return false
+        end,
+
         -- Crab's update function.
         update = function(self, dt)
             if not self:collidesFromBottom() then

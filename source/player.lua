@@ -6,10 +6,12 @@ function Player.load()
     Player.y = Utilities.fieldToCoordinate(6)
     Player.horizontalVelocity = 0
     Player.verticalVelocity = 0
+    Player.health = 5
     Player.state = "idle"
     Player.direction = "right"
     Player.currentTexture = Texture.player.idle
     Player.canShoot = true
+    Player.canTakeDamage = true
 end
 
 -- Switches state of the player to the value given in argument.
@@ -27,13 +29,16 @@ function Player.setState(state)
 
     if state == "jumping" then
         Player.currentTexture = Texture.player.jumpingFalling
-        Player.verticalVelocity = -JUMP_VELOCITY
         return
     end
 
     if state == "falling" then
         Player.currentTexture = Texture.player.jumpingFalling
         return
+    end
+
+    if state == "dead" then
+        Player.currentTexture = Texture.player.jumpingFalling
     end
 end
 
@@ -126,21 +131,21 @@ end
 
 -- Blocks player movement to left.
 function Player.blockLeftMovement()
-    if Player.checkDirection("left") and (Player.collidesTileFromLeft() or Player.x < 5*PIXEL)then
+    if Player.checkDirection("left") and Player.collidesTileFromLeft() then
         Player.x = Utilities.fieldCenter(Player.x)-3*PIXEL
     end
 end
 
 -- Blocks player movement to right.
 function Player.blockRightMovement()
-    if Player.checkDirection("right") and (Player.collidesTileFromRight() or Player.x > COLUMN_NUMBER*TILE_SIZE-5*PIXEL) then
+    if Player.checkDirection("right") and Player.collidesTileFromRight() then
         Player.x = Utilities.fieldCenter(Player.x)+3*PIXEL
     end
 end
 
 -- Blocks player jumping.
 function Player.blockTopMovement()
-    if Player.collidesTileFromTop() or Player.y < TILE_SIZE/2 then
+    if Player.collidesTileFromTop() then
         Player.y = Utilities.fieldCenter(Player.y)
         Player.verticalVelocity = 0
     end
@@ -155,29 +160,64 @@ function Player.blockBottomMovement()
     end
 end
 
+-- Makes player jump.
+function Player.jump()
+    Player.setState("jumping")
+    Player.verticalVelocity = -JUMP_VELOCITY
+end
+
+-- Bounces player.
+function Player.bounce()
+    Player.setState("jumping")
+    Player.verticalVelocity = -JUMP_VELOCITY/2
+end
+
+-- Resets player's hp, position and state.
+function Player.respawn()
+    Player.x = Utilities.fieldToCoordinate(10)
+    Player.y = Utilities.fieldToCoordinate(6)
+    Player.health = 5
+    Player.setState("idle")
+end
+
 -- Updates player's state and position.
 function Player.update(dt)
-    if love.keyboard.isDown("space") and Player.canShoot then
+    if love.keyboard.isDown('s') and Player.canShoot then
         local x = Player.x + (Player.direction == "right" and 4*PIXEL or -5*PIXEL)
-        table.insert(Bullets, Bullet(x, Player.y, Player.direction))
+        local y = Player.y
+        table.insert(Bullets, Bullet(x, y, Player.direction))
         Player.canShoot = false
-        Timer.addNonRepeating("reload", RELOAD, function()
+        Timer.addNonRepeating("reload", RELOAD_TIME, function()
             Player.canShoot = true
         end)
+    end
+
+    if Player.canTakeDamage and Player.health > 0 then
+        for i, crab in pairs(Crabs) do
+            if math.abs(crab.x-Player.x) < TILE_SIZE and math.abs(crab.y-Player.y) < TILE_SIZE then
+                Player.bounce()
+                Player.health = Player.health-1
+                if Player.health <= 0 then
+                    Player.setState("dead")
+                end
+                Player.canTakeDamage = false
+                Timer.addNonRepeating("immunity", IMMUNITY_TIME, function()
+                    Player.canTakeDamage = true
+                end)
+            end
+        end
     end
 
     if Player.checkState("idle") then
         if love.keyboard.isDown('a') or love.keyboard.isDown('d') then
             Player.setState("walking")
         end
-        if love.keyboard.isDown('w') then
-            Player.setState("jumping")
+        if love.keyboard.isDown("space") then
+            Player.jump()
         end
         if Player.isInAir() then
             Player.setState("falling")
         end
-
-        Player.recognizeDirection()
         return
     end
 
@@ -187,8 +227,8 @@ function Player.update(dt)
         if not love.keyboard.isDown('a') and not love.keyboard.isDown('d') then
             Player.setState("idle")
         end
-        if love.keyboard.isDown('w') then
-            Player.setState("jumping")
+        if love.keyboard.isDown("space") then
+            Player.jump()
         end
         if Player.isInAir() then
             Player.setState("falling")
@@ -224,8 +264,7 @@ function Player.update(dt)
         Player.y = Player.y + dt*Player.verticalVelocity
 
         if Player.y > TILE_SIZE*ROW_NUMBER+TILE_SIZE/2 then
-            Player.x = Utilities.fieldToCoordinate(10)
-            Player.y = Utilities.fieldToCoordinate(6)
+            Player.respawn()
         end
 
         Player.blockBottomMovement()
@@ -235,9 +274,18 @@ function Player.update(dt)
         Player.recognizeDirection()
         return
     end
+
+    if Player.checkState("dead") then
+        Player.verticalVelocity = Player.verticalVelocity + dt*GRAVITY
+        Player.y = Player.y + dt*Player.verticalVelocity
+
+        if Player.y > TILE_SIZE*ROW_NUMBER+TILE_SIZE/2 then
+            Player.respawn()
+        end
+    end
 end
 
--- Draw's player.
+-- Draws player.
 function Player.draw()
     if Player.checkDirection("left") then
         love.graphics.draw(Player.currentTexture, Player.x, Player.y, 0, -PIXEL, PIXEL, OFFSET, OFFSET)

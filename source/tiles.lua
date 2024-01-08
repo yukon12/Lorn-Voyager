@@ -20,27 +20,27 @@ function Tiles.load()
         end
     end
 
-    Tiles.matrix[6][7] = true
-    Tiles.matrix[7][7] = true
-    Tiles.matrix[8][7] = true
+    Tiles.matrix[6][6] = true
+    Tiles.matrix[7][6] = true
+    Tiles.matrix[8][6] = true
+    Tiles.matrix[16][2] = true
     Tiles.matrix[16][3] = true
-    Tiles.matrix[16][4] = true
-    Tiles.matrix[17][4] = true
-    Tiles.matrix[18][4] = true
+    Tiles.matrix[17][3] = true
+    Tiles.matrix[18][3] = true
 
+    Tiles.matrix[22][7] = false
     Tiles.matrix[22][8] = false
     Tiles.matrix[22][9] = false
-    Tiles.matrix[22][10] = false
 end
 
 -- Returns true if there is a tile at a given column or row.
 function Tiles.isTile(column, row)
     if column < 1 or column > COLUMN_NUMBER then
-        return false
+        return true
     end
 
     if row < 1 or row > ROW_NUMBER then
-        return false
+        return true
     end
 
     if Tiles.matrix[column][row] then

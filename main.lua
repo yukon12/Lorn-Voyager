@@ -3,6 +3,7 @@ require "dependencies"
 -- Main load function.
 function love.load()
     love.graphics.setDefaultFilter("nearest", "nearest")
+    love.graphics.setLineWidth(PIXEL)
 
     Texture.load()
     Timer.load()
@@ -35,11 +36,24 @@ end
 function love.update(dt)
     Timer.update(dt)
     Player.update(dt)
+    local it = 1
     for i, crab in pairs(Crabs) do
         crab:update(dt)
     end
-    for i, bullet in pairs(Bullets) do
-        bullet:update(dt)
+    while it <= #Bullets do
+        Bullets[it]:update(dt)
+        if Bullets[it]:collidesWithTile() then
+            table.remove(Bullets, it)
+            it = it - 1
+        else
+            for i, crab in pairs(Crabs) do
+                if crab:belongs(Bullets[it].x, Bullets[it].y) then
+                    table.remove(Crabs, i)
+                    break
+                end
+            end
+        end
+        it = it + 1
     end
 end
 
@@ -48,11 +62,11 @@ function love.draw()
     local shift = Player.x-WINDOW_WIDTH/2
     shift = math.max(shift, 0)
     shift = math.min(shift, TILE_SIZE*COLUMN_NUMBER-WINDOW_WIDTH)
-    love.graphics.translate(-shift, 0)
-
+    
     love.graphics.clear(BLACK)
 
-    Player.draw()
+    love.graphics.translate(-shift, 0)
+    
     Tiles.draw()
     for i, crab in pairs(Crabs) do
         crab:draw()
@@ -60,4 +74,9 @@ function love.draw()
     for i, bullet in pairs(Bullets) do
         bullet:draw()
     end
+    Player.draw()
+
+    love.graphics.translate(shift, 0)
+
+    Interface.draw()
 end
