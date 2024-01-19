@@ -2,17 +2,7 @@ Tiles = {nil}
 
 -- Loads Tiles module.
 function Tiles.load()
-    Tiles.matrix = {nil}
-
-    for column = 1, COLUMN_NUMBER do
-        Tiles.matrix[column] = {nil}    
-    end
-
-    for column = 1, COLUMN_NUMBER do
-        for row = 1, ROW_NUMBER do
-            Tiles.matrix[column][row] = false
-        end
-    end
+    Tiles.matrix = MatrixBool(COLUMN_NUMBER, ROW_NUMBER)
 
     for column = 1, COLUMN_NUMBER do
         for row = ROW_NUMBER-GROUND+1, ROW_NUMBER do
@@ -20,17 +10,9 @@ function Tiles.load()
         end
     end
 
-    Tiles.matrix[6][6] = true
-    Tiles.matrix[7][6] = true
-    Tiles.matrix[8][6] = true
-    Tiles.matrix[16][2] = true
-    Tiles.matrix[16][3] = true
-    Tiles.matrix[17][3] = true
-    Tiles.matrix[18][3] = true
-
-    Tiles.matrix[22][7] = false
-    Tiles.matrix[22][8] = false
-    Tiles.matrix[22][9] = false
+    Tiles.matrix[15][6] = true
+    Tiles.matrix[16][6] = true
+    Tiles.matrix[17][6] = true
 end
 
 -- Returns true if there is a tile at a given column or row.

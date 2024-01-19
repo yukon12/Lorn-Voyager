@@ -9,7 +9,7 @@ function Player.load()
     Player.health = 5
     Player.state = "idle"
     Player.direction = "right"
-    Player.currentTexture = Texture.player.idle
+    Player.texture = Texture.player.idle
     Player.canShoot = true
     Player.canTakeDamage = true
 end
@@ -19,26 +19,26 @@ function Player.setState(state)
     Player.state = state
 
     if state == "idle" then
-        Player.currentTexture = Texture.player.idle
+        Player.texture = Texture.player.idle
         return
     end
 
     if state == "walking" then
-        Player.currentTexture = Texture.player.walking[1]
+        Player.texture = Texture.player.walking[1]
     end
 
     if state == "jumping" then
-        Player.currentTexture = Texture.player.jumpingFalling
+        Player.texture = Texture.player.jumpingFalling
         return
     end
 
     if state == "falling" then
-        Player.currentTexture = Texture.player.jumpingFalling
+        Player.texture = Texture.player.jumpingFalling
         return
     end
 
     if state == "dead" then
-        Player.currentTexture = Texture.player.jumpingFalling
+        Player.texture = Texture.player.jumpingFalling
     end
 end
 
@@ -52,16 +52,15 @@ end
 
 -- Checks whether move keys are down and sets direction and horizontalVelocity accordingly.
 function Player.recognizeDirection()
-    local hV = 0
+    Player.horizontalVelocity = 0
     if love.keyboard.isDown('a') then
         Player.direction = "left"
-        hV = hV - WALK_VELOCITY
+        Player.horizontalVelocity = Player.horizontalVelocity - WALK_VELOCITY
     end
     if love.keyboard.isDown('d') then
         Player.direction = "right"
-        hV = hV + WALK_VELOCITY
+        Player.horizontalVelocity = Player.horizontalVelocity + WALK_VELOCITY
     end
-    Player.horizontalVelocity = hV
 end
 
 -- Returns true if the direction of the player is equal to the value given in the argument, return false otherwise.
@@ -166,7 +165,7 @@ function Player.jump()
     Player.verticalVelocity = -JUMP_VELOCITY
 end
 
--- Bounces player.
+-- Makes player bounce.
 function Player.bounce()
     Player.setState("jumping")
     Player.verticalVelocity = -JUMP_VELOCITY/2
@@ -185,7 +184,9 @@ function Player.update(dt)
     if love.keyboard.isDown('s') and Player.canShoot then
         local x = Player.x + (Player.direction == "right" and 4*PIXEL or -5*PIXEL)
         local y = Player.y
-        table.insert(Bullets, Bullet(x, y, Player.direction))
+        local c = Utilities.coordinateToField(x)
+        local r = Utilities.coordinateToField(y)
+        table.insert(Bullets.matrix[c][r], Bullet(x, y, Player.direction))
         Player.canShoot = false
         Timer.addNonRepeating("reload", RELOAD_TIME, function()
             Player.canShoot = true
@@ -193,7 +194,9 @@ function Player.update(dt)
     end
 
     if Player.canTakeDamage and Player.health > 0 then
-        for i, crab in pairs(Crabs) do
+        local c = Utilities.coordinateToField(Player.x)
+        local r = Utilities.coordinateToField(Player.y)
+        for i, crab in pairs(Crabs.matrix[c][r]) do
             if math.abs(crab.x-Player.x) < TILE_SIZE and math.abs(crab.y-Player.y) < TILE_SIZE then
                 Player.bounce()
                 Player.health = Player.health-1
@@ -288,12 +291,12 @@ end
 -- Draws player.
 function Player.draw()
     if Player.checkDirection("left") then
-        love.graphics.draw(Player.currentTexture, Player.x, Player.y, 0, -PIXEL, PIXEL, OFFSET, OFFSET)
+        love.graphics.draw(Player.texture, Player.x, Player.y, 0, -PIXEL, PIXEL, OFFSET, OFFSET)
         return
     end
 
     if Player.checkDirection("right") then
-        love.graphics.draw(Player.currentTexture, Player.x, Player.y, 0, PIXEL, PIXEL, OFFSET, OFFSET)
+        love.graphics.draw(Player.texture, Player.x, Player.y, 0, PIXEL, PIXEL, OFFSET, OFFSET)
         return
     end
 end

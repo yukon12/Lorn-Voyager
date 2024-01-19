@@ -1,5 +1,50 @@
 Crabs = {nil}
 
+-- Spawns crap at a given position.
+function Crabs.spawn(column, row)
+    table.insert(Crabs.matrix[column][row], Crab(column, row))
+end
+
+-- Loads Crabs module.
+function Crabs.load()
+    Crabs.matrix = MatrixArray(COLUMN_NUMBER, ROW_NUMBER)
+    Crabs.texture = Texture.crab[1]
+    
+    Crabs.spawn(5, 1)
+    Crabs.spawn(10, 1)
+    Crabs.spawn(15, 1)
+    Crabs.spawn(20, 1)
+    Crabs.spawn(25, 1)
+end
+
+-- Updates all crabs.
+function Crabs.update(dt)
+    for c = 1, COLUMN_NUMBER do
+        for r = 1, ROW_NUMBER do
+            for it = #Crabs.matrix[c][r], 1, -1 do
+                Crabs.matrix[c][r][it]:update(dt)
+                local ac = Utilities.coordinateToField(Crabs.matrix[c][r][it].x)
+                local ar = Utilities.coordinateToField(Crabs.matrix[c][r][it].y)
+                if ac ~= c or ar ~= r then
+                    table.insert(Crabs.matrix[ac][ar], Crabs.matrix[c][r][it])
+                    table.remove(Crabs.matrix[c][r], it)
+                end
+            end
+        end
+    end
+end
+
+-- Draws all crabs.
+function Crabs.draw()
+    for c = 1, COLUMN_NUMBER do
+        for r = 1, ROW_NUMBER do
+            for it = #Crabs.matrix[c][r], 1, -1 do
+                Crabs.matrix[c][r][it]:draw(dt)
+            end
+        end
+    end
+end
+
 function Crab(column, row)
     return {
         x = Utilities.fieldToCoordinate(column),
@@ -106,7 +151,7 @@ function Crab(column, row)
 
         -- Crab's draw function.
         draw = function(self)
-            love.graphics.draw(Texture.crab[animationFrame], self.x, self.y, 0, PIXEL, PIXEL, OFFSET, OFFSET)
+            love.graphics.draw(Texture.crab[Animation.frame], self.x, self.y, 0, PIXEL, PIXEL, OFFSET, OFFSET)
         end
     }
 end
