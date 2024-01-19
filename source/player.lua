@@ -12,10 +12,20 @@ function Player.load()
     Player.texture = Texture.player.idle
     Player.canShoot = true
     Player.canTakeDamage = true
+    Player.particleSystem = love.graphics.newParticleSystem(Texture.pixel)
+    Player.particleSystem:setParticleLifetime(0.5, 0.5)
+    Player.particleSystem:setSpeed(-20, 20, -20, 20)
+    Player.particleSystem:setLinearAcceleration(0, 0, -20, -20)
+    Player.particleSystem:setEmissionArea("normal", 4, 0)
+    Player.particleSystem:setColors(1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0)
 end
 
 -- Switches state of the player to the value given in argument.
 function Player.setState(state)
+    if Player.state == "walking" then
+        Player.particleSystem:setEmissionRate(0)
+    end
+
     Player.state = state
 
     if state == "idle" then
@@ -24,6 +34,7 @@ function Player.setState(state)
     end
 
     if state == "walking" then
+        Player.particleSystem:setEmissionRate(10)
         Player.texture = Texture.player.walking[1]
     end
 
@@ -181,6 +192,8 @@ end
 
 -- Updates player's state and position.
 function Player.update(dt)
+    Player.particleSystem:update(dt)
+
     if love.keyboard.isDown('s') and Player.canShoot then
         local x = Player.x + (Player.direction == "right" and 4*PIXEL or -5*PIXEL)
         local y = Player.y
@@ -290,6 +303,10 @@ end
 
 -- Draws player.
 function Player.draw()
+    love.graphics.setColor(WHITE)
+    love.graphics.draw(Player.particleSystem, Player.x, Player.y+TILE_SIZE/2, 0, PIXEL, PIXEL)
+    love.graphics.setColor(1.0, 1.0, 1.0, 1.0)
+
     if Player.checkDirection("left") then
         love.graphics.draw(Player.texture, Player.x, Player.y, 0, -PIXEL, PIXEL, OFFSET, OFFSET)
         return

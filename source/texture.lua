@@ -22,5 +22,5 @@ function Texture.load()
         love.graphics.newImage("resources/crab1.png"),
         love.graphics.newImage("resources/crab2.png")
     }
-    Texture.bullet = love.graphics.newImage("resources/bullet.png")
+    Texture.pixel = love.graphics.newImage("resources/pixel.png")
 end
