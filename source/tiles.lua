@@ -10,12 +10,60 @@ function Tiles.load()
         end
     end
 
-    Tiles.matrix[15][6] = true
+    Tiles.matrix[1][6] = true
+    Tiles.matrix[2][6] = true
+    Tiles.matrix[3][6] = true
+    Tiles.matrix[15][7] = false
+    Tiles.matrix[15][8] = false
+    Tiles.matrix[15][9] = false
     Tiles.matrix[16][6] = true
+    Tiles.matrix[16][5] = true
     Tiles.matrix[17][6] = true
-    Tiles.matrix[13][7] = false
-    Tiles.matrix[13][8] = false
-    Tiles.matrix[13][9] = false
+    Tiles.matrix[18][3] = true
+    Tiles.matrix[19][3] = true
+    Tiles.matrix[20][3] = true
+    Tiles.matrix[21][3] = true
+    Tiles.matrix[22][3] = true
+    Tiles.matrix[23][6] = true
+    Tiles.matrix[23][5] = true
+    Tiles.matrix[24][7] = false
+    Tiles.matrix[24][8] = false
+    Tiles.matrix[24][9] = false
+    Tiles.matrix[25][6] = true
+    Tiles.matrix[25][5] = true
+    Tiles.matrix[25][4] = true
+    Tiles.matrix[25][3] = true
+    Tiles.matrix[26][4] = true
+    Tiles.matrix[27][3] = true
+    Tiles.matrix[27][4] = true
+    Tiles.matrix[29][4] = true
+    Tiles.matrix[29][3] = true
+    Tiles.matrix[30][4] = true
+    Tiles.matrix[31][1] = true
+    Tiles.matrix[31][2] = true
+    Tiles.matrix[31][3] = true
+    Tiles.matrix[31][4] = true
+    Tiles.matrix[31][5] = true
+    Tiles.matrix[31][6] = true
+    Tiles.matrix[28][6] = true
+    Tiles.matrix[29][6] = true
+    Tiles.matrix[26][7] = false
+    Tiles.matrix[27][7] = false
+    Tiles.matrix[28][7] = false
+    Tiles.matrix[29][7] = false
+    Tiles.matrix[30][7] = false
+    Tiles.matrix[26][8] = false
+    Tiles.matrix[30][8] = false
+    Tiles.matrix[30][6] = true
+    Tiles.matrix[31][8] = false
+    Tiles.matrix[32][8] = false
+    Tiles.matrix[33][8] = false
+    Tiles.matrix[33][7] = false
+    Tiles.matrix[35][6] = true
+    Tiles.matrix[36][6] = true
+    Tiles.matrix[37][6] = true
+    Tiles.matrix[38][6] = true
+    Tiles.matrix[39][6] = true
 end
 
 -- Returns true if there is a tile at a given column or row.

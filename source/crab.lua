@@ -1,6 +1,6 @@
 Crabs = {nil}
 
--- Spawns crap at a given position.
+-- Spawns crab at a given position.
 function Crabs.spawn(column, row)
     table.insert(Crabs.matrix[column][row], Crab(column, row))
 end
@@ -9,12 +9,22 @@ end
 function Crabs.load()
     Crabs.matrix = MatrixArray(COLUMN_NUMBER, ROW_NUMBER)
     Crabs.texture = Texture.crab[1]
-    
-    Crabs.spawn(5, 1)
-    Crabs.spawn(10, 1)
-    Crabs.spawn(15, 1)
-    Crabs.spawn(20, 1)
-    Crabs.spawn(25, 1)
+
+    Crabs.spawn(1, 5)
+    Crabs.spawn(18, 6)
+    Crabs.spawn(20, 6)
+    Crabs.spawn(22, 6)
+    Crabs.spawn(18, 2)
+    Crabs.spawn(20, 2)
+    Crabs.spawn(22, 2)
+    Crabs.spawn(27, 2)
+    Crabs.spawn(28, 4)
+    Crabs.spawn(28, 6)
+    Crabs.spawn(31, 7)
+    Crabs.spawn(29, 2)
+    Crabs.spawn(35, 5)
+    Crabs.spawn(37, 5)
+    Crabs.spawn(39, 5)
 end
 
 -- Updates all crabs.
