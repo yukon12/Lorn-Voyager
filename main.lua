@@ -39,8 +39,13 @@ function love.draw()
     
     love.graphics.clear(BLACK)
 
-    love.graphics.translate(-shift, 0)
+    love.graphics.translate(-shift/2, 0)
     
+    love.graphics.draw(Texture.background, 0, 0, 0, PIXEL, PIXEL)
+    love.graphics.draw(Texture.background, 24*TILE_SIZE, 0, 0, PIXEL, PIXEL)
+    
+    love.graphics.translate(-shift/2, 0)
+
     Tiles.draw()
     Particles.draw()
     Player.draw()

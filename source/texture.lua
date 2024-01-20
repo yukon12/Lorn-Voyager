@@ -23,4 +23,5 @@ function Texture.load()
         love.graphics.newImage("resources/crab2.png")
     }
     Texture.pixel = love.graphics.newImage("resources/pixel.png")
+    Texture.background = love.graphics.newImage("resources/background.png")
 end

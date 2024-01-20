@@ -13,6 +13,9 @@ function Tiles.load()
     Tiles.matrix[15][6] = true
     Tiles.matrix[16][6] = true
     Tiles.matrix[17][6] = true
+    Tiles.matrix[13][7] = false
+    Tiles.matrix[13][8] = false
+    Tiles.matrix[13][9] = false
 end
 
 -- Returns true if there is a tile at a given column or row.

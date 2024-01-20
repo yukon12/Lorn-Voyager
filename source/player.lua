@@ -149,6 +149,9 @@ end
 -- Blocks player movement to right.
 function Player.blockRightMovement()
     if Player.checkDirection("right") and Player.collidesTileFromRight() then
+        if Player.x >= COLUMN_NUMBER*TILE_SIZE-TILE_SIZE/2 then
+            Player.respawn()
+        end
         Player.x = Utilities.fieldCenter(Player.x)+3*PIXEL
     end
 end
@@ -164,6 +167,11 @@ end
 -- Blocks player hitting the ground.
 function Player.blockBottomMovement()
     if not Player.isInAir() then
+        if Player.y >= WINDOW_HEIGHT-TILE_SIZE/2 then
+            Player.health = 0
+            Player.state = "dead"
+            return
+        end
         Player.setState("idle")
         Player.verticalVelocity = 0
         Player.y = Utilities.fieldCenter(Player.y)
@@ -188,6 +196,7 @@ function Player.respawn()
     Player.y = Utilities.fieldToCoordinate(6)
     Player.health = 5
     Player.setState("idle")
+    Crabs.load()
 end
 
 -- Updates player's state and position.
