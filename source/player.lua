@@ -150,7 +150,7 @@ end
 function Player.blockRightMovement()
     if Player.checkDirection("right") and Player.collidesTileFromRight() then
         if Player.x >= COLUMN_NUMBER*TILE_SIZE-TILE_SIZE/2 then
-            Player.respawn()
+            Player.win()
         end
         Player.x = Utilities.fieldCenter(Player.x)+3*PIXEL
     end
@@ -199,6 +199,16 @@ function Player.respawn()
     Player.health = 5
     Player.setState("idle")
     Crabs.load()
+end
+
+-- Enters lose screen.
+function Player.die()
+    StateMachine.startTransition(StateMachine.drawGame, StateMachine.drawLoseScreen, 1000, -500, "lose")
+end
+
+-- Enters win screen.
+function Player.win()
+    StateMachine.startTransition(StateMachine.drawGame, StateMachine.drawWinScreen, 1000, -500, "win")
 end
 
 -- Updates player's state and position.
@@ -307,7 +317,7 @@ function Player.update(dt)
         Player.y = Player.y + dt*Player.verticalVelocity
 
         if Player.y > TILE_SIZE*ROW_NUMBER+TILE_SIZE/2 then
-            Player.respawn()
+            Player.die()
         end
     end
 end
