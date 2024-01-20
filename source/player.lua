@@ -180,12 +180,14 @@ end
 
 -- Makes player jump.
 function Player.jump()
+    Sound.jump:play()
     Player.setState("jumping")
     Player.verticalVelocity = -JUMP_VELOCITY
 end
 
 -- Makes player bounce.
 function Player.bounce()
+    Sound.hurt:play()
     Player.setState("jumping")
     Player.verticalVelocity = -JUMP_VELOCITY/2
 end

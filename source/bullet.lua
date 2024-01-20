@@ -9,6 +9,7 @@ end
 function detectCrabCollision(column, row, x, y)
     for it = #Crabs.matrix[column][row], 1, -1 do
         if Crabs.matrix[column][row][it]:belongs(x, y) then
+            Sound.crab:play()
             local particleSystem = love.graphics.newParticleSystem(Texture.pixel)
             particleSystem:setParticleLifetime(0.5, 0.5)
             particleSystem:setSpeed(-20, 20, -20, 20)
@@ -60,6 +61,7 @@ function Bullets.draw()
 end
 
 function Bullet(x, y, direction)
+    Sound.shoot:play()
     return {
         x = x,
         y = y,

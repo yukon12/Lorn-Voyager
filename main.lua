@@ -6,6 +6,7 @@ function love.load()
     love.graphics.setLineWidth(PIXEL)
 
     Texture.load()
+    Sound.load()
     Timer.load()
     Animation.load()
     Tiles.load()
