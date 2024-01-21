@@ -230,17 +230,19 @@ function Player.update(dt)
     if Player.canTakeDamage and Player.health > 0 then
         local c = Utilities.coordinateToField(Player.x)
         local r = Utilities.coordinateToField(Player.y)
-        for i, crab in pairs(Crabs.matrix[c][r]) do
-            if math.abs(crab.x-Player.x) < TILE_SIZE and math.abs(crab.y-Player.y) < TILE_SIZE then
-                Player.bounce()
-                Player.health = Player.health-1
-                if Player.health <= 0 then
-                    Player.setState("dead")
+        if c >= 1 and c <= COLUMN_NUMBER and r >= 1 and r <= ROW_NUMBER then
+            for i, crab in pairs(Crabs.matrix[c][r]) do
+                if math.abs(crab.x-Player.x) < TILE_SIZE and math.abs(crab.y-Player.y) < TILE_SIZE then
+                    Player.bounce()
+                    Player.health = Player.health-1
+                    if Player.health <= 0 then
+                        Player.setState("dead")
+                    end
+                    Player.canTakeDamage = false
+                    Timer.addNonRepeating("immunity", IMMUNITY_TIME, function()
+                        Player.canTakeDamage = true
+                    end)
                 end
-                Player.canTakeDamage = false
-                Timer.addNonRepeating("immunity", IMMUNITY_TIME, function()
-                    Player.canTakeDamage = true
-                end)
             end
         end
     end

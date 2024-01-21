@@ -6,7 +6,7 @@ function Bullets.load()
 end
 
 -- Checks if a bullet collides with any crabs.
-function detectCrabCollision(column, row, x, y)
+function Bullets.detectCrabCollision(column, row, x, y)
     for it = #Crabs.matrix[column][row], 1, -1 do
         if Crabs.matrix[column][row][it]:belongs(x, y) then
             Sound.crab:play()
@@ -38,7 +38,7 @@ function Bullets.update(dt)
                     end
                     table.remove(Bullets.matrix[c][r], it)
                 else
-                    if detectCrabCollision(c, r, Bullets.matrix[c][r][it].x, Bullets.matrix[c][r][it].y) then
+                    if Bullets.detectCrabCollision(c, r, Bullets.matrix[c][r][it].x, Bullets.matrix[c][r][it].y) then
                         table.remove(Bullets.matrix[c][r], it)
                     end
                 end
